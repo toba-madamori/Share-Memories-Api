@@ -26,19 +26,15 @@ const UserSchema = new mongoose.Schema({
         minlength: 6,
     },
     profile_pic:{
-        type:Image,
+        type:String,
         default: url
     },
     status:{
         type:String,
         default:'Available',
     },
-    likes_dislikes:{
+    cloudinary_id:{
         type:String,
-    },
-    DOB:{
-        type:Date
+        required:[true, 'Please provide the cloudinary_id']
     }
-
-
-})
+},{timestamps:true})
