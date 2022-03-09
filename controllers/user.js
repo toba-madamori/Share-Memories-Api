@@ -60,7 +60,10 @@ const login = async (req,res)=>{
 }
 
 const getUser = async(req,res)=>{
-    res.status(StatusCodes.OK).json({ msg:'get a particular user' })
+    const { userID } = req.user
+    const user = await User.findById(userID)
+
+    res.status(StatusCodes.OK).json({ user })
 }
 
 module.exports = {
