@@ -23,7 +23,6 @@ const UserSchema = new mongoose.Schema({
         type:String,
         required:[true, 'Please provide a password'],
         minlength: 6,
-        select:false,
     },
     avatar:{
         type:String
@@ -35,7 +34,6 @@ const UserSchema = new mongoose.Schema({
     cloudinary_id:{
         type:String,
         required:[true, 'Please provide the cloudinary_id'],
-        select:false,
     }
 },{timestamps:true})
 

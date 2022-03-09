@@ -1,11 +1,14 @@
 const router = require('express').Router()
-const { register, login, getUser } = require('../controllers/user')
+const { register, login, getUser, updateUser } = require('../controllers/user')
 const upload = require('../utils/multer')
 const authMiddleware = require('../middleware/auth')
 
 
 router.post('/register', upload.single('avatar'), register)
 router.post('/login', login)
-router.get('/get-user', authMiddleware, getUser) // cannot get a particular user/profile if you are not authenticated
+
+// all the routes below will be authenticated as they concern the user's profile
+router.get('/get-user', authMiddleware, getUser)
+router.patch('/update-user', authMiddleware, upload.single('avatar'), updateUser)
 
 module.exports = router;

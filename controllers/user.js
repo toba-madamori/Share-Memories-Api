@@ -50,6 +50,7 @@ const login = async (req,res)=>{
         throw new UnauthenticatedError('invalid credentials')
     }
     // checking if the password is correct
+
     const isMatch = await user.comparePassword(password)
     if(!isMatch){
         throw new UnauthenticatedError('invalid credentials')
@@ -66,8 +67,47 @@ const login = async (req,res)=>{
 
 const getUser = async(req,res)=>{
     const { userID } = req.user
-    const user = await User.findById(userID)
+    const user = await User.findById(userID).select('-password -cloudinary_id')
 
+    if(!user){
+        throw new UnauthenticatedError('sorry this user does not exists')
+    }
+    res.status(StatusCodes.OK).json({ user })
+}
+
+
+// note that change of password will not fall under this controller
+const updateUser = async(req,res)=>{
+    const { name, email, status } = req.body
+    const { userID } = req.user
+    const avatar = req.file
+
+    // getting the user
+    let user = await User.findById(userID)
+    if(!user){
+        throw new UnauthenticatedError('sorry this user does not exists')
+    }
+
+    // setting up the update values
+    const update = {}
+    if(name){
+        update.name = name
+    }
+    if(email){
+        update.email = email
+    }
+    if(avatar){
+        await cloudinary.uploader.destroy(user.cloudinary_id)
+        const newImage = await cloudinary.uploader.upload(avatar.path)
+        update.avatar = newImage.secure_url
+        update.cloudinary_id = newImage.public_id
+    }
+    if(status){
+        update.status = status
+    }
+    
+    // updating the user 
+    user = await User.findOneAndUpdate({ _id:userID }, update, { new:true, runValidators:true }).select('-password -cloudinary_id')
     res.status(StatusCodes.OK).json({ user })
 }
 
@@ -75,4 +115,5 @@ module.exports = {
     register,
     login,
     getUser,
+    updateUser,
 }
