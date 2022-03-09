@@ -59,6 +59,11 @@ const login = async (req,res)=>{
     res.status(StatusCodes.OK).json({ username:user.name, token })
 }
 
+
+// in hindsight the user specific business logic should have been separated from the authentication 
+// business logic for better separation of concerns, this has been duly noted and won't be repeated again
+
+
 const getUser = async(req,res)=>{
     const { userID } = req.user
     const user = await User.findById(userID)
