@@ -59,8 +59,12 @@ const login = async (req,res)=>{
     res.status(StatusCodes.OK).json({ username:user.name, token })
 }
 
+const getUser = async(req,res)=>{
+    res.status(StatusCodes.OK).json({ msg:'get a particular user' })
+}
 
 module.exports = {
     register,
     login,
+    getUser,
 }
