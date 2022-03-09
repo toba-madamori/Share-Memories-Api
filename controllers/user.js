@@ -2,7 +2,7 @@ const { StatusCodes } = require('http-status-codes')
 const User = require('../models/user')
 const cloudinary = require('../utils/cloudinary')
 const path = require('path')
-const { BadRequestError } = require('../errors')
+const { BadRequestError, UnauthenticatedError } = require('../errors')
 
 const defaultAvatarPath = path.join(__dirname, '../public/default-profile-image.png') 
 
@@ -39,7 +39,24 @@ const register = async (req,res)=>{
 }
 
 const login = async (req,res)=>{
-    res.status(StatusCodes.OK).json({ msg:'logged in a user' })
+    const { email, password } = req.body
+
+    if(!email || !password){
+        throw new BadRequestError('please provide an email and password')
+    }
+    // checking if the user exists
+    const user = await User.findOne({ email })
+    if(!user){
+        throw new UnauthenticatedError('invalid credentials')
+    }
+    // checking if the password is correct
+    const isMatch = await user.comparePassword(password)
+    if(!isMatch){
+        throw new UnauthenticatedError('invalid credentials')
+    }
+    const token = user.createToken()
+
+    res.status(StatusCodes.OK).json({ username:user.name, token })
 }
 
 
