@@ -111,9 +111,31 @@ const updateUser = async(req,res)=>{
     res.status(StatusCodes.OK).json({ user })
 }
 
+// Note: there will most likely be added functionality to this controller that will affect user memories and likes/dislikes
+// and comments, this will be when those functionalities are added to the application
+
+const deleteUserAccount = async(req,res)=>{
+    const { userID } = req.user
+    //getting the user
+    let user = await User.findById(userID)
+    if(!user){
+        throw new BadRequestError('sorry this user does not exist')
+    }
+
+    // deleting user avatar from cloudinary
+    await cloudinary.uploader.destroy(user.cloudinary_id)
+    // deleting the user
+    user = await User.findByIdAndDelete({ _id:userID })
+    if(user !== null){
+        return res.status(StatusCodes.OK).json({ msg:'success' })
+    }
+    return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ msg:'something went wrong, please try again later' })
+}
+
 module.exports = {
     register,
     login,
     getUser,
     updateUser,
+    deleteUserAccount,
 }
