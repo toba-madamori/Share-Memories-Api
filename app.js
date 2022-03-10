@@ -5,7 +5,9 @@ require('express-async-errors')
 const express = require('express')
 const app = express()
 const connectDb = require('./db/connect')
+const authMiddleware = require('./middleware/auth')
 const userRouter = require('./routes/user')
+const memoriesRouter = require('./routes/memories')
 
 // custom built middleware 
 const notFound = require('./middleware/notfound')
@@ -22,6 +24,7 @@ app.get('/',(req,res)=>{
 
 //routes
 app.use('/api/v1/auth', userRouter)
+app.use('/api/v1/memories', authMiddleware, memoriesRouter)
 
 app.use(errorHandler)
 app.use(notFound)
