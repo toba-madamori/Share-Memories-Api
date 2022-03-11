@@ -3,6 +3,7 @@ const mongoose = require('mongoose')
 const MemoriesSchema = new mongoose.Schema({
     userid:{
         type:mongoose.Types.ObjectId,
+        ref:'Users',
         required:[true, 'please provide a userid']
     },
     memory:{
@@ -17,11 +18,17 @@ const MemoriesSchema = new mongoose.Schema({
         type:Array,
         default:[],
     },
+    cloudinary_id:{
+        type:String,
+        required:[true, 'Please provide the cloudinary_id'],
+    }
     // likes:{
     //     type:mongoose.Types.ObjectId,
+    //      ref:'Likes',
     // },
     // dislikes:{
     //     type:mongoose.Types.ObjectId,
+    //      ref:'Dislikes',
     // },
 },{timestamps:true})
 
