@@ -21,15 +21,15 @@ const MemoriesSchema = new mongoose.Schema({
     cloudinary_id:{
         type:String,
         required:[true, 'Please provide the cloudinary_id'],
-    }
-    // likes:{
-    //     type:mongoose.Types.ObjectId,
-    //      ref:'Likes',
-    // },
-    // dislikes:{
-    //     type:mongoose.Types.ObjectId,
-    //      ref:'Dislikes',
-    // },
+    },
+    likes:{
+        type:Number,
+        default:0,
+    },
+    dislikes:{
+        type:Number,
+        default:0
+    },
 },{timestamps:true})
 
 module.exports = mongoose.model('Memories', MemoriesSchema)
