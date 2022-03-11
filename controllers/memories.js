@@ -49,7 +49,35 @@ const createMemory = async(req,res)=>{
 }
 
 const updateAMemory = async(req,res)=>{
-    res.status(StatusCodes.OK).json({ msg:'update a memory' })
+    const memory = req.file
+    let { title, tags } = req.body
+    const { id:memoryID } = req.params
+
+    //getting the memory to be updated
+    let prev_memory = await Memory.findById(memoryID)
+    if(!prev_memory){
+        throw BadRequestError('sorry this memory does not exist')
+    }
+    //updating the memory on cloudinary
+    let result = {}
+    let update = {}
+    if(memory){
+        await cloudinary.uploader.destroy(prev_memory.cloudinary_id)
+        result = await cloudinary.uploader.upload(memory.path)
+        update.memory = result.secure_url
+        update.cloudinary_id = result.public_id    
+    }
+    if(title){
+        update.title = title
+    }
+    if(tags){
+        tags = tags.split(',')
+        update.tags = tags
+    }
+    //updating the memory on mongoDB
+    const newMemory = await Memory.findOneAndUpdate({ _id:memoryID }, update, { new:true, runValidators:true }) 
+    
+    res.status(StatusCodes.OK).json({ newMemory })
 }
 
 const deleteAMemory = async(req,res)=>{
