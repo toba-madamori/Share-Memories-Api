@@ -9,9 +9,9 @@ const MemoriesSchema = new mongoose.Schema({
         type:String,
         required:[true, 'please provide the memory you want to create']
     },
-    description:{
+    title:{
         type:String,
-        required:[true, 'please provide a description for the memory you want to create']
+        required:[true, 'please provide a title for the memory you want to create']
     },
     tags:{
         type:Array,
