@@ -16,7 +16,10 @@ const getAllMemories = async(req,res)=>{
 
 // getting a particular memory belonging to a particular user
 const getAMemory = async(req,res)=>{
-    res.status(StatusCodes.OK).json({ msg:'get a users particular memory' })
+    const { id:memoryID } = req.params
+    const memory = await Memory.findById(memoryID)
+
+    res.status(StatusCodes.OK).json({ memory })
 }
 
 const createMemory = async(req,res)=>{
