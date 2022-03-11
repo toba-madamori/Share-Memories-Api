@@ -6,10 +6,15 @@ const User = require('../models/user')
 const path = require('path')
 
 
+// getting all memories of a particular user
 const getAllMemories = async(req,res)=>{
-    res.status(StatusCodes.OK).json({ msg:'get all of a users memories' })
+    const { userID } = req.user
+    const memories = await Memory.find({ userid:userID })
+
+    res.status(StatusCodes.OK).json({ memories, nhbits:memories.length })
 }
 
+// getting a particular memory belonging to a particular user
 const getAMemory = async(req,res)=>{
     res.status(StatusCodes.OK).json({ msg:'get a users particular memory' })
 }
