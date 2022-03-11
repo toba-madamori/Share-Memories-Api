@@ -3,6 +3,7 @@ const { BadRequestError } = require('../errors')
 const cloudinary = require('../utils/cloudinary')
 const Memory = require('../models/memories')
 const User = require('../models/user')
+const path = require('path')
 
 
 const getAllMemories = async(req,res)=>{
@@ -16,12 +17,27 @@ const getAMemory = async(req,res)=>{
 const createMemory = async(req,res)=>{
     const memory = req.file
     const { userID } = req.user
-    const { title, tags } = req.body // note some transformation will mostlikely need to be done on the tags
+    let { title, tags } = req.body // note some transformation will mostlikely need to be done on the tags
 
+    // checking if the memory is available
     if(!memory){
         throw new BadRequestError('cannot create memories without a memory')
     }
-    res.status(StatusCodes.OK).json({ msg:'create a memory' })
+    const result = await cloudinary.uploader.upload(memory.path)
+
+    // checking if the other params are available
+    if(!title || title===""){
+        throw new BadRequestError('you cannot create a memory without a title')
+    }
+    if(tags){
+        tags = tags.split(',')
+    }
+    let memImage = result.secure_url
+    let cloudinary_id = result.public_id
+    // creating the new memory
+    const newMemory = await Memory.create({ userid:userID, memory:memImage, title, tags, cloudinary_id })
+
+    res.status(StatusCodes.CREATED).json({ newMemory })
 }
 
 const updateAMemory = async(req,res)=>{
