@@ -53,11 +53,12 @@ const updateAMemory = async(req,res)=>{
     const memory = req.file
     let { title, tags } = req.body
     const { id:memoryID } = req.params
+    const { userID } = req.user
 
     //getting the memory to be updated
-    let prev_memory = await Memory.findById(memoryID)
+    let prev_memory = await Memory.findOne({ _id:memoryID, userid:userID })
     if(!prev_memory){
-        throw BadRequestError('sorry this memory does not exist')
+        throw new BadRequestError('sorry this memory does not exist')
     }
     //updating the memory on cloudinary
     let result = {}
@@ -92,8 +93,22 @@ const deleteAMemory = async(req,res)=>{
     res.status(StatusCodes.OK).json({ msg:'success' })
 }
 
+//note: only query params available for the search are the title and the tags features present on memories 
 const memorySearch = async(req,res)=>{
-    res.status(StatusCodes.OK).json({ msg:'searching for a particular memory using title and tags'})
+    const { tags , title } = req.query
+    const queryObject = {}
+    if(title){
+        queryObject.title = { $regex:title, $options:'i' }
+    }
+    if(tags){
+        queryObject.tags = { $regex:tags, $options:'i' }
+    }
+    // searching the memories
+    const result = await Memory.find(queryObject)
+    if(result.length > 0){
+        return res.status(StatusCodes.OK).json({ result, nbhits:result.length })
+    }
+    res.status(StatusCodes.OK).json({ msg:'sorry no memory with this title or tag'})
 }
 // note that at the end you are creating a controller for generating the feed for each specific user with the 
 // memories available in the app
