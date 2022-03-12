@@ -4,6 +4,7 @@ const cloudinary = require('../utils/cloudinary')
 const Memory = require('../models/memories')
 const User = require('../models/user')
 const path = require('path')
+const { STATUS_CODES } = require('http')
 
 
 // getting all memories of a particular user
@@ -91,6 +92,9 @@ const deleteAMemory = async(req,res)=>{
     res.status(StatusCodes.OK).json({ msg:'success' })
 }
 
+const memorySearch = async(req,res)=>{
+    res.status(StatusCodes.OK).json({ msg:'searching for a particular memory using title and tags'})
+}
 // note that at the end you are creating a controller for generating the feed for each specific user with the 
 // memories available in the app
 //1: generating a randomn feed automatically 
@@ -105,4 +109,5 @@ module.exports = {
     createMemory,
     updateAMemory,
     deleteAMemory,
+    memorySearch,
 }
