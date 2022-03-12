@@ -1,5 +1,6 @@
 const { StatusCodes } = require('http-status-codes')
 const User = require('../models/user')
+const Memory = require('../models/memories')
 const cloudinary = require('../utils/cloudinary')
 const path = require('path')
 const { BadRequestError, UnauthenticatedError } = require('../errors')
@@ -153,8 +154,33 @@ const userGeneralSearch = async(req,res)=>{
     res.status(StatusCodes.OK).json({ msg:'sorry there is no user with these username' })
 }
 
+// search-params:username/email or both
 const userSpecificSearch = async(req,res)=>{
-    res.status(StatusCodes.OK).json({ msg:'youve found the specific user you were looking for' })
+    const { username, email } = req.query
+    const queryObject = {}
+
+    if(username && username!==""){
+        queryObject.name = { $regex:username, $options:'i'}
+    }
+    if(email && email!==""){
+        queryObject.email = { $regex:email, $options:'i'}
+    }
+    // checking if the queryObject
+    if(Object.getOwnPropertyNames(queryObject).length === 0){
+        throw new BadRequestError('please provide a username or email-address')
+    }
+    const user = await User.findOne(queryObject).select('-password -cloudinary_id')
+    if(!user){
+        throw new BadRequestError('sorry no user exists with this username or email-address')
+    }
+    //getting the users memories and likes and dislikes
+    let userMemories = await Memory.find({ userid:user._id })
+    if(userMemories.length === 0){
+        userMemories = []
+    }
+
+    // returning the user profile and the users-memories
+    res.status(StatusCodes.OK).json({ user, userMemories})
 }
 
 module.exports = {
