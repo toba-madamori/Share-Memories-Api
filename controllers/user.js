@@ -136,8 +136,21 @@ const deleteUserAccount = async(req,res)=>{
 //1:first type of search returns all usernames that match the given search keyword
 //2:second type of search is more specific, takes a keyword and tries to find the exact username match, if successfull
 // it returns the users profile(public account details, memories, likes and dislikes)
+
+
+// search params: username
+// note that after returning the possible usernames, the client is responsible for implementing a specific user 
+// search with those possible usernames
 const userGeneralSearch = async(req,res)=>{
-    res.status(StatusCodes.OK).json({ msg:'youve found the possible users you were looking for' })
+    const { username } = req.query
+    if(username===""){
+        throw new BadRequestError('sorry the search bar cannot be empty')
+    }
+    const users = await User.find({ name:{ $regex:username, $options:'i' }}).select('-password -cloudinary_id')
+    if(users.length > 0){
+        return res.status(StatusCodes.OK).json({ users, nbhits:users.length })
+    }
+    res.status(StatusCodes.OK).json({ msg:'sorry there is no user with these username' })
 }
 
 const userSpecificSearch = async(req,res)=>{
