@@ -132,10 +132,24 @@ const deleteUserAccount = async(req,res)=>{
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ msg:'something went wrong, please try again later' })
 }
 
+//user search
+//1:first type of search returns all usernames that match the given search keyword
+//2:second type of search is more specific, takes a keyword and tries to find the exact username match, if successfull
+// it returns the users profile(public account details, memories, likes and dislikes)
+const userGeneralSearch = async(req,res)=>{
+    res.status(StatusCodes.OK).json({ msg:'youve found the possible users you were looking for' })
+}
+
+const userSpecificSearch = async(req,res)=>{
+    res.status(StatusCodes.OK).json({ msg:'youve found the specific user you were looking for' })
+}
+
 module.exports = {
     register,
     login,
     getUser,
     updateUser,
     deleteUserAccount,
+    userGeneralSearch,
+    userSpecificSearch,
 }
