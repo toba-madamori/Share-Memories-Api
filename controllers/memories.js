@@ -81,7 +81,14 @@ const updateAMemory = async(req,res)=>{
 }
 
 const deleteAMemory = async(req,res)=>{
-    res.status(StatusCodes.OK).json({ msg:'delete a memory' })
+    const { id:memoryID } = req.params
+
+    // deleting the memory if its there
+    const deletedMemory = await Memory.findByIdAndDelete({ _id:memoryID })
+    if(!deletedMemory){
+        throw new BadRequestError('sorry this memory does not exist')
+    }
+    res.status(StatusCodes.OK).json({ msg:'success' })
 }
 
 // note that at the end you are creating a controller for generating the feed for each specific user with the 
