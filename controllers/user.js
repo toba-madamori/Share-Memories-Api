@@ -125,6 +125,8 @@ const deleteUserAccount = async(req,res)=>{
 
     // deleting user avatar from cloudinary
     await cloudinary.uploader.destroy(user.cloudinary_id)
+    // deleting the users memories
+    const deletedMemories = await Memory.deleteMany({ userid:userID })
     // deleting the user
     user = await User.findByIdAndDelete({ _id:userID })
     if(user !== null){
@@ -165,7 +167,7 @@ const userSpecificSearch = async(req,res)=>{
     if(email && email!==""){
         queryObject.email = { $regex:email, $options:'i'}
     }
-    // checking if the queryObject
+    // checking if the queryObject is empty
     if(Object.getOwnPropertyNames(queryObject).length === 0){
         throw new BadRequestError('please provide a username or email-address')
     }
