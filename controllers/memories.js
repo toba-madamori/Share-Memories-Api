@@ -4,7 +4,6 @@ const cloudinary = require('../utils/cloudinary')
 const Memory = require('../models/memories')
 const User = require('../models/user')
 const path = require('path')
-const { STATUS_CODES } = require('http')
 
 
 // getting all memories of a particular user
