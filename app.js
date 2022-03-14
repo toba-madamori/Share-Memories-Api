@@ -8,6 +8,7 @@ const connectDb = require('./db/connect')
 const authMiddleware = require('./middleware/auth')
 const userRouter = require('./routes/user')
 const memoriesRouter = require('./routes/memories')
+const commentsRouter = require('./routes/comments')
 
 // custom built middleware 
 const notFound = require('./middleware/notfound')
@@ -25,6 +26,7 @@ app.get('/',(req,res)=>{
 //routes
 app.use('/api/v1/auth', userRouter)
 app.use('/api/v1/memories', authMiddleware, memoriesRouter)
+app.use('/api/v1/comments', authMiddleware, commentsRouter)
 
 app.use(errorHandler)
 app.use(notFound)
