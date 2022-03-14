@@ -144,7 +144,7 @@ const deleteUserAccount = async(req,res)=>{
 // search params: username
 // note that after returning the possible usernames, the client is responsible for implementing a specific user 
 // search with those possible usernames
-// pagination query params are page and limit!!!
+
 const userGeneralSearch = async(req,res)=>{
     const { username } = req.query
     if(username===""){
