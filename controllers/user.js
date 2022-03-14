@@ -186,9 +186,6 @@ const userSpecificSearch = async(req,res)=>{
     }
     //getting the users memories and likes and dislikes
     let userMemories = await Memory.find({ userid:user._id })
-    if(userMemories.length === 0){
-        userMemories = []
-    }
 
     // returning the user profile and the users-memories
     res.status(StatusCodes.OK).json({ user, userMemories})
