@@ -3,6 +3,7 @@ const { BadRequestError } = require('../errors')
 const cloudinary = require('../utils/cloudinary')
 const Memory = require('../models/memories')
 const User = require('../models/user')
+const Comment = require('../models/comments')
 const path = require('path')
 
 
@@ -18,8 +19,9 @@ const getAllMemories = async(req,res)=>{
 const getAMemory = async(req,res)=>{
     const { id:memoryID } = req.params
     const memory = await Memory.findById(memoryID)
+    const comments = await Comment.find({ memoryid:memoryID })
 
-    res.status(StatusCodes.OK).json({ memory })
+    res.status(StatusCodes.OK).json({ memory, comments })
 }
 
 const createMemory = async(req,res)=>{
@@ -93,6 +95,7 @@ const deleteAMemory = async(req,res)=>{
 }
 
 //note: only query params available for the search are the title and the tags features present on memories 
+// This is a general memory search
 const memorySearch = async(req,res)=>{
     const { tags , title } = req.query
     const queryObject = {}
