@@ -13,12 +13,22 @@ const createComment = async(req,res)=>{
 
     // creating the comment 
     const newComment = await Comment.create({ comment, userid:userID, memoryid:memoryID })
-    
+
     return res.status(StatusCodes.CREATED).json({ newComment }) 
 }
 
+//note:the userID on the comment should match the userID trying to update the comment before the update goes through
 const updateComment = async(req,res)=>{
-    res.status(StatusCodes.OK).json({ msg:'comment has been updated' })
+    const { id:commentID } = req.params
+    const { comment } = req.body
+
+    if(comment===""){
+        throw new BadRequestError('sorry, you cannot send an empty comment')
+    }
+    // updating the comment 
+    const updatedComment = await Comment.findOneAndUpdate({ _id:commentID}, { comment, edited:true }, {new:true, runValidators:true })
+
+    res.status(StatusCodes.OK).json({ updatedComment })
 }
 
 const deleteComment = async(req,res)=>{
