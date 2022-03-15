@@ -86,6 +86,8 @@ const updateAMemory = async(req,res)=>{
 const deleteAMemory = async(req,res)=>{
     const { id:memoryID } = req.params
 
+    // deleting all the comments under that memory
+    const comments = await Comment.deleteMany({ memoryid:memoryID })
     // deleting the memory if its there
     const deletedMemory = await Memory.findByIdAndDelete({ _id:memoryID })
     if(!deletedMemory){
