@@ -32,7 +32,13 @@ const updateComment = async(req,res)=>{
 }
 
 const deleteComment = async(req,res)=>{
-    res.status(StatusCodes.OK).json({ msg:'comment has been deleted' })
+    const { id:commentID } = req.params
+    const { userID } = req.user
+
+    //checking if the comment exists
+    const comment = await Comment.findOneAndDelete({ _id:commentID , userid:userID })
+    
+    res.status(StatusCodes.OK).json({ msg:'success' })
 }
 
 
