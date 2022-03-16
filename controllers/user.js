@@ -1,6 +1,7 @@
 const { StatusCodes } = require('http-status-codes')
 const User = require('../models/user')
 const Memory = require('../models/memories')
+const Comment = require('../models/comments')
 const cloudinary = require('../utils/cloudinary')
 const path = require('path')
 const { BadRequestError, UnauthenticatedError } = require('../errors')
@@ -112,9 +113,6 @@ const updateUser = async(req,res)=>{
     res.status(StatusCodes.OK).json({ user })
 }
 
-// Note: there will most likely be added functionality to this controller that will affect user memories and likes/dislikes
-// and comments, this will be when those functionalities are added to the application
-
 const deleteUserAccount = async(req,res)=>{
     const { userID } = req.user
     //getting the user
@@ -125,8 +123,17 @@ const deleteUserAccount = async(req,res)=>{
 
     // deleting user avatar from cloudinary
     await cloudinary.uploader.destroy(user.cloudinary_id)
-    // deleting the users memories
-    const deletedMemories = await Memory.deleteMany({ userid:userID })
+
+    // deleting the users memories and the comments under those memories
+    for await(const doc of Memory.find({ userid:userID})){
+        await Comment.deleteMany({ memoryid: doc._id })
+        await cloudinary.uploader.destroy(doc.cloudinary_id)
+        await Memory.deleteOne({ memoryid:doc._id })
+    }
+
+    //deleting all the comments made by the user
+    await Comment.deleteMany({ userid:userID })
+
     // deleting the user
     user = await User.findByIdAndDelete({ _id:userID })
     if(user !== null){
@@ -190,6 +197,7 @@ const userSpecificSearch = async(req,res)=>{
     // returning the user profile and the users-memories
     res.status(StatusCodes.OK).json({ user, userMemories})
 }
+
 
 module.exports = {
     register,

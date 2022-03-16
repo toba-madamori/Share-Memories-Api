@@ -93,6 +93,7 @@ const deleteAMemory = async(req,res)=>{
     if(!deletedMemory){
         throw new BadRequestError('sorry this memory does not exist')
     }
+    await cloudinary.uploader.destroy(deletedMemory.cloudinary_id)
     res.status(StatusCodes.OK).json({ msg:'success' })
 }
 
