@@ -198,6 +198,9 @@ const userSpecificSearch = async(req,res)=>{
     res.status(StatusCodes.OK).json({ user, userMemories})
 }
 
+const usersLikedMemories = async(req,res)=>{
+    res.status(StatusCodes.OK).json({ msg:'all the memories the user has liked' })
+}
 
 module.exports = {
     register,
@@ -207,4 +210,5 @@ module.exports = {
     deleteUserAccount,
     userGeneralSearch,
     userSpecificSearch,
+    usersLikedMemories,
 }
