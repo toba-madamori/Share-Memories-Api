@@ -2,6 +2,8 @@ const { StatusCodes } = require('http-status-codes')
 const User = require('../models/user')
 const Memory = require('../models/memories')
 const Comment = require('../models/comments')
+const Likes = require('../models/likes')
+const Dislikes = require('../models/dislikes')
 const cloudinary = require('../utils/cloudinary')
 const path = require('path')
 const { BadRequestError, UnauthenticatedError } = require('../errors')
@@ -199,7 +201,19 @@ const userSpecificSearch = async(req,res)=>{
 }
 
 const usersLikedMemories = async(req,res)=>{
-    res.status(StatusCodes.OK).json({ msg:'all the memories the user has liked' })
+    const { userID } = req.user
+    
+    let likedMemories = Likes.find({ userid:userID }).select('-_id -userid').populate('memoryid')
+    // pagination and limiting of the data recieved
+    // options are [page:page number, limit:no of products sent back]
+    const page = Number(req.query.page) || 1
+    const limit = Number(req.query.limit) || 10
+    const skip = (page - 1)*limit
+    likedMemories = likedMemories.skip(skip).limit(limit)
+
+    const result = await likedMemories
+    
+    res.status(StatusCodes.OK).json({ result, nbhits:result.length })
 }
 
 module.exports = {
