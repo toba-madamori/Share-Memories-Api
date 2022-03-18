@@ -7,7 +7,8 @@ const {
     deleteUserAccount,
     userGeneralSearch, 
     userSpecificSearch,
-    usersLikedMemories
+    usersLikedMemories,
+    usersDislikedMemories,
  } = require('../controllers/user')
 const upload = require('../utils/multer')
 const authMiddleware = require('../middleware/auth')
@@ -28,5 +29,6 @@ router.get('/user-specific-search', authMiddleware, userSpecificSearch)
 
 // other user related routes
 router.get('/users-liked-memories', authMiddleware, usersLikedMemories)
+router.get('/users-disliked-memories', authMiddleware, usersDislikedMemories)
 
 module.exports = router;

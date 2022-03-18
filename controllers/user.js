@@ -216,6 +216,22 @@ const usersLikedMemories = async(req,res)=>{
     res.status(StatusCodes.OK).json({ result, nbhits:result.length })
 }
 
+const usersDislikedMemories = async(req,res)=>{
+    const { userID } = req.user
+    
+    let dislikedMemories = Dislikes.find({ userid:userID }).select('-_id -userid').populate('memoryid')
+    //pagination and limiting of the data recieved
+    // options are [page:page number, limit:no of products sent back]
+    const page = Number(req.query.page) || 1
+    const limit = Number(req.query.limit) || 10
+    const skip = (page - 1)*limit
+    dislikedMemories = dislikedMemories.skip(skip).limit(limit)
+
+    const result = await dislikedMemories
+
+    res.status(StatusCodes.OK).json({ result, nbhits:result.length })
+}
+
 module.exports = {
     register,
     login,
@@ -225,4 +241,5 @@ module.exports = {
     userGeneralSearch,
     userSpecificSearch,
     usersLikedMemories,
+    usersDislikedMemories,
 }
