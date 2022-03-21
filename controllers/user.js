@@ -95,7 +95,6 @@ const forgotPassword = async(req,res)=>{
         if(err){
             console.log(err);
         }
-        console.log(info.response);
     })
     // note the client will be responsible for sending the url params in the link and the new password back
     // to the api for the flow to be complete

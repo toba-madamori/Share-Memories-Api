@@ -21,7 +21,7 @@ router.post('/login', login)
 
 // password reset routes
 router.post('/forgot-password', forgotPassword)
-router.post('/reset-password', resetPassword)
+router.post('/reset-password/:id/:token', resetPassword)
 
 // all the routes below will be authenticated as they concern the user's profile
 router.get('/get-user', authMiddleware, getUser)
