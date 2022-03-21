@@ -7,6 +7,8 @@ const Dislikes = require('../models/dislikes')
 const cloudinary = require('../utils/cloudinary')
 const path = require('path')
 const { BadRequestError, UnauthenticatedError } = require('../errors')
+const jwt = require('jsonwebtoken')
+const transporter = require('../utils/nodemailer')
 
 const defaultAvatarPath = path.join(__dirname, '../public/default-profile-image.png') 
 
@@ -66,8 +68,40 @@ const login = async (req,res)=>{
 
 
 const forgotPassword = async(req,res)=>{
-    res.status(StatusCodes.OK).json({ msg:'forgot password '})
+    const { email } = req.body
+    // checking if the user exists
+    const user = await User.findOne({ email:email })
+    if(!user){
+        throw new UnauthenticatedError('sorry this user does not exist')
+    }
+    // creating a one-time password link valid for 15mins
+    const secret = process.env.JWT_SECRET + user.password
+    const payload = {
+        email:email,
+        id:user._id
+    }
+    const token = jwt.sign(payload, secret, {expiresIn:'15m'})
+
+    const link = `${req.protocol}://${req.headers.host}/${req.originalUrl}/${user._id}/${token}`
+
+    // sending the link to the user
+    const options = {
+        from:'noreply@outlook.com',   // base/service email
+        to: email,
+        subject:'Password reset',
+        text:`Please click this link ${link} to reset your password. Note it expires in 15mins and can only be used once.`,
+    }
+    transporter.sendMail(options, (err,info)=>{
+        if(err){
+            console.log(err);
+        }
+        console.log(info.response);
+    })
+    // note the client will be responsible for sending the url params in the link and the new password back
+    // to the api for the flow to be complete
+    res.status(StatusCodes.OK).json({ msg:'A reset password link has been sent to your email'})
 }
+
 
 const resetPassword = async(req,res)=>{
     res.status(StatusCodes.OK).json({ msg:'reset password '})
