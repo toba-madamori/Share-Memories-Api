@@ -65,6 +65,14 @@ const login = async (req,res)=>{
 }
 
 
+const forgotPassword = async(req,res)=>{
+    res.status(StatusCodes.OK).json({ msg:'forgot password '})
+}
+
+const resetPassword = async(req,res)=>{
+    res.status(StatusCodes.OK).json({ msg:'reset password '})
+}
+
 // in hindsight the user specific business logic should have been separated from the authentication 
 // business logic for better separation of concerns, this has been duly noted and won't be repeated again
 
@@ -242,4 +250,6 @@ module.exports = {
     userSpecificSearch,
     usersLikedMemories,
     usersDislikedMemories,
+    forgotPassword,
+    resetPassword,
 }

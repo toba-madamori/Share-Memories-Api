@@ -9,6 +9,8 @@ const {
     userSpecificSearch,
     usersLikedMemories,
     usersDislikedMemories,
+    resetPassword,
+    forgotPassword,
  } = require('../controllers/user')
 const upload = require('../utils/multer')
 const authMiddleware = require('../middleware/auth')
@@ -16,6 +18,10 @@ const authMiddleware = require('../middleware/auth')
 
 router.post('/register', upload.single('avatar'), register)
 router.post('/login', login)
+
+// password reset routes
+router.post('/forgot-password', forgotPassword)
+router.post('/reset-password', resetPassword)
 
 // all the routes below will be authenticated as they concern the user's profile
 router.get('/get-user', authMiddleware, getUser)
