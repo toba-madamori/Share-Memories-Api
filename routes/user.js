@@ -11,12 +11,14 @@ const {
     usersDislikedMemories,
     resetPassword,
     forgotPassword,
+    validatingNewUser,
  } = require('../controllers/user')
 const upload = require('../utils/multer')
 const authMiddleware = require('../middleware/auth')
 
 
 router.post('/register', upload.single('avatar'), register)
+router.post('/confirm-registration/:id/:token', validatingNewUser)
 router.post('/login', login)
 
 // password reset routes

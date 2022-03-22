@@ -39,10 +39,52 @@ const register = async (req,res)=>{
     // creating a new user
     const user = await User.create({ ...req.body })
 
-    // creating access token
-    const token = user.createToken()
+    // creating a one-time email confirmation link valid for 30 days
+    const secret = process.env.JWT_SECRET + user.password
+    const payload = {
+        email:email,
+        id:user._id
+    }
+    const token = jwt.sign(payload, secret, {expiresIn:'30d'})
 
-    res.status(StatusCodes.CREATED).json({ username:user.name, token })
+    const link = `${req.protocol}://${req.headers.host}/${req.originalUrl}/${user._id}/${token}`
+
+    // creating link and sending the confirmation email
+    const options = {
+        from:'noreply@outlook.com',   // base/service email
+        to: email,
+        subject:'Confirm Registration',
+        text:`Please click this link ${link} to confirm your registration, note that it expires in 30 days`,
+    }
+    transporter.sendMail(options, (err,info)=>{
+        if(err){
+            console.log(err);
+        }
+    })
+
+    res.status(StatusCodes.CREATED).json({ msg:'sucessful registration, please head to your mail to complete your registration' })
+}
+
+
+const validatingNewUser = async(req,res)=>{
+    const { _id, token } = req.params
+    // validating the user
+    const user = await User.findById(_id)
+    if(!user){
+        throw new UnauthenticatedError('sorry this user does not exist')
+    }
+    // validating the token 
+    const secret = process.env.JWT_SECRET + user.password
+    const payload = jwt.verify(token, secret)
+    if(!payload){
+        throw new UnauthenticatedError('invalid token')
+    }
+    // updating the user
+    const updatedUser = await User.findByIdAndUpdate({ _id }, { confirmed:true }, {runValidators:true})
+    if(updatedUser){
+        res.status(StatusCodes.OK).json({ msg:'your registration is complete, please head to the login page..' })
+    }
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ msg:'server error, please try again later' })
 }
 
 const login = async (req,res)=>{
@@ -61,6 +103,11 @@ const login = async (req,res)=>{
     const isMatch = await user.comparePassword(password)
     if(!isMatch){
         throw new UnauthenticatedError('invalid credentials')
+    }
+    // checking if the user has completed the registration from the email link
+    const confirmRegistration = user.confirmed
+    if(!confirmRegistration){
+        throw new UnauthenticatedError('Incomplete registration error')
     }
     const token = user.createToken()
 
@@ -307,4 +354,5 @@ module.exports = {
     usersDislikedMemories,
     forgotPassword,
     resetPassword,
+    validatingNewUser,
 }

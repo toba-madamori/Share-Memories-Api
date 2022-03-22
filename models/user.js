@@ -34,7 +34,11 @@ const UserSchema = new mongoose.Schema({
     cloudinary_id:{
         type:String,
         required:[true, 'Please provide the cloudinary_id'],
-    }
+    },
+    confirmed:{
+        type:Boolean,
+        default:false,
+    },
 },{timestamps:true})
 
 
