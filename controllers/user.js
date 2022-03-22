@@ -8,6 +8,7 @@ const cloudinary = require('../utils/cloudinary')
 const path = require('path')
 const { BadRequestError, UnauthenticatedError } = require('../errors')
 const jwt = require('jsonwebtoken')
+const bcrypt = require('bcrypt')
 const transporter = require('../utils/nodemailer')
 
 const defaultAvatarPath = path.join(__dirname, '../public/default-profile-image.png') 
@@ -103,7 +104,28 @@ const forgotPassword = async(req,res)=>{
 
 
 const resetPassword = async(req,res)=>{
-    res.status(StatusCodes.OK).json({ msg:'reset password '})
+    const { _id, token } = req.params
+    let { newPassword } = req.body
+    // validating the user
+    const user = await User.findById(_id)
+    if(!user){
+        throw new UnauthenticatedError('sorry this user does not exist')
+    }
+    // validating the token 
+    const secret = process.env.JWT_SECRET + user.password
+    const payload = jwt.verify(token, secret)
+    if(!payload){
+        throw new UnauthenticatedError('invalid token')
+    }
+    // hashing and updating the users password
+    const salt = await bcrypt.genSalt(10)
+    newPassword = await bcrypt.hash(newPassword, salt)
+
+    const updatedUser = await User.findByIdAndUpdate({ _id }, { password:newPassword }, {runValidators:true})
+    if(updatedUser){
+        res.status(StatusCodes.OK).json({ msg:'your new password has been saved' })
+    }
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({ msg:'server error, please try again later' })
 }
 
 // in hindsight the user specific business logic should have been separated from the authentication 
