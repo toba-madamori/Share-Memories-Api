@@ -19,7 +19,12 @@ const initialLikesFeed = async(req,res)=>{
 }
 
 const finalLikesFeed = async(req,res)=>{
-    res.status(StatusCodes.OK).json({ msg:'Final likes feed' })
+    const { userID } = req.user
+
+    let feed = await Likes.find({ userid:userID }).select('-_id -userid').populate('memoryid').populate('userid').populate('memoryid')
+    // randomise the result and paginate it
+
+    res.status(StatusCodes.OK).json({ feed })
 }
 
 module.exports= {
