@@ -10,7 +10,9 @@ const initialLikesFeed = async(req,res)=>{
     const query = arr.join()
 
     // searching for memories with the following like keywords
-   const memories = await Memory.find({ tag :{ $regex:query, $options:'i' }})
+    let memories = await Memory.find({ tag :{ $regex:query, $options:'i' }})
+    memories = memories.sort(()=>Math.random()-0.5)
+   // pagination
 
     res.status(StatusCodes.OK).json({ memories })
 }
