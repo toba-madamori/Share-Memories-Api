@@ -4,6 +4,7 @@ const Likes = require('../models/likes')
 const Memory = require('../models/memories')
 
 // this 3 different likes will always be used to generate a feed for a user that has not liked any previous memory
+// the likes can be saved on the user object or can be requested everytime...
 const initialLikesFeed = async(req,res)=>{
     const { like1, like2, like3 } = req.body
     const arr = [like1, like2, like3]
