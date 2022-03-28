@@ -65,7 +65,7 @@ const register = async (req,res)=>{
     res.status(StatusCodes.CREATED).json({ msg:'sucessful registration, please head to your mail to complete your registration' })
 }
 
-
+// used to finalise the user registration after sending the email
 const validatingNewUser = async(req,res)=>{
     const { _id, token } = req.params
     // validating the user
