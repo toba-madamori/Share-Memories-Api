@@ -12,6 +12,12 @@ const commentsRouter = require('./routes/comments')
 const reactionsRouter = require('./routes/reactions')
 const feedRouter = require('./routes/feed')
 
+// extra security packages
+const helmet = require('helmet')
+const cors = require('cors')
+const xss = require('xss-clean')
+const rateLimiter = require('express-rate-limit')
+
 // custom built middleware 
 const notFound = require('./middleware/notfound')
 const errorHandler = require('./middleware/errorhandler')
@@ -19,10 +25,23 @@ const errorHandler = require('./middleware/errorhandler')
 // inbuilt middleware
 app.use(express.json())
 
+// extra packages
+app.set('trust proxy', 1)
+app.use(rateLimiter(
+  {
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
+  }  
+))
+app.use(express.json());
+app.use(helmet())
+app.use(cors())
+app.use(xss())
 
-// dummy route
+
+// documentation route
 app.get('/',(req,res)=>{
-    return res.status(200).json({ msg: 'Welcome to the memory sharing application' })
+    res.send('<h4>Share Memories Api...</h4><a href="/api-docs">Documentation</a>')
 })
 
 //routes
