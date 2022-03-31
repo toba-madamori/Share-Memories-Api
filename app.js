@@ -41,7 +41,7 @@ app.use(xss())
 
 // documentation route
 app.get('/',(req,res)=>{
-    res.send('<h4>Share Memories Api...</h4><a href="/api-docs">Documentation</a>')
+    res.send('<h4>Share Memories Api...</h4><a href="https://documenter.getpostman.com/view/14326360/UVyrTw5Q">Documentation</a>')
 })
 
 //routes
