@@ -19,7 +19,7 @@ Method : Token Authentication
 
 
 #### Future Plans:
-This includes adding a very comprehensive suite of tests for the application 
+This includes adding a very comprehensive suite of tests for the application and
 
 Real-time communication between users
 
