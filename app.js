@@ -44,6 +44,10 @@ app.get('/',(req,res)=>{
     res.send('<h4>Share Memories Api...</h4><a href="https://documenter.getpostman.com/view/14326360/UVyrTw5Q">Documentation</a>')
 })
 
+app.get('/ip', (req,res)=>{
+  res.send(req.ip)
+})
+
 //routes
 app.use('/api/v1/auth', userRouter)
 app.use('/api/v1/memories', authMiddleware, memoriesRouter)
